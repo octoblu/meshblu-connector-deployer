@@ -1,10 +1,10 @@
 language: shell
 script: echo "no test";
 before_deploy:
-- mkdir -p deploy/latest
-- mkdir -p deploy/${TRAVIS_TAG:-$TRAVIS_COMMIT}
-- cp build.sh deploy/latest
-- cp build.sh deploy/${TRAVIS_TAG:-$TRAVIS_COMMIT}
+- mkdir -p deploy/deployer/latest
+- mkdir -p deploy/deployer/${TRAVIS_TAG:-$TRAVIS_COMMIT}
+- cp build.sh deploy/deployer/latest
+- cp build.sh deploy/deployer/${TRAVIS_TAG:-$TRAVIS_COMMIT}
 deploy:
 - provider: s3
   access_key_id: AKIAJH2D5IPIRHYJT5IA

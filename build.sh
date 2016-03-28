@@ -3,7 +3,7 @@
 print_usage(){
   echo "Usage: ./build.sh <connector-name> <tag>"
   echo "or"
-  echo "Usage: DEPLOYER_CONNECTOR_NAME=<connector-name> DEPLOYER_TAG=<tag>"
+  echo "Usage: env DEPLOYER_CONNECTOR_NAME=<connector-name> DEPLOYER_TAG=<tag> ./build.sh"
 }
 
 bundle_connector(){
@@ -46,9 +46,9 @@ main() {
   if [ -z "$connector_name" ]; then
     connector_name=$DEPLOYER_CONNECTOR_NAME
   fi
-  
-  if [ -z "$connector_name" ]; then
-    connector_name=$DEPLOYER_TAG
+
+  if [ -z "$tag" ]; then
+    tag=$DEPLOYER_TAG
   fi
 
   if [ -z "$connector_name" ]; then

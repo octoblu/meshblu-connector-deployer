@@ -2,6 +2,8 @@
 
 print_usage(){
   echo "Usage: ./build.sh <connector-name> <tag>"
+  echo "or"
+  echo "Usage: DEPLOYER_CONNECTOR_NAME=<connector-name> DEPLOYER_TAG=<tag>"
 }
 
 bundle_connector(){
@@ -38,20 +40,28 @@ main() {
     exit 1
   fi
 
-  if [ -z "$1" ]; then
+  local connector_name="$1"
+  local tag="$2"
+
+  if [ -z "$connector_name" ]; then
+    connector_name=$DEPLOYER_CONNECTOR_NAME
+  fi
+  
+  if [ -z "$connector_name" ]; then
+    connector_name=$DEPLOYER_TAG
+  fi
+
+  if [ -z "$connector_name" ]; then
     print_usage
     echo "Missing connector name"
     exit 1
   fi
 
-  if [ -z "$2" ]; then
+  if [ -z "$tag" ]; then
     print_usage
     echo "Missing tag"
     exit 1
   fi
-
-  local connector_name="$1"
-  local tag="$2"
 
   clean
   create_directories "$connector_name" "$tag"

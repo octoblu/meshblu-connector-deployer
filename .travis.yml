@@ -2,10 +2,7 @@ language: bash
 script:
   - echo "no test"; exit 0
 before_deploy:
-  - mkdir -p deploy/latest
-  - mkdir -p deploy/${TRAVIS_TAG:-$TRAVIS_COMMIT}
-  - cp ./build.sh deploy/latest
-  - cp ./build.sh deploy/${TRAVIS_TAG:-$TRAVIS_COMMIT}
+  - ./build.sh deployer ${TRAVIS_TAG:-$TRAVIS_COMMIT}
 deploy:
   provider: s3
   access_key_id: AKIAJH2D5IPIRHYJT5IA
@@ -13,9 +10,8 @@ deploy:
     secure: CT+yckqgdWsunGsU2/R5mFUfQg9OO/YGaqHgvYJvkFPVuOzeTUGPlTsgCK0rWw4DbrorQrXhehzILa5nQFuQ1U66KjyxvbRVDcZPtzQ+W0UfWIf+9pUgiaRnxj8SqP1EGSTdxBuMX+ne0y6fBzyzmYb7QQvB4k9hGfWvAYKhOiKCINaaOwxBagGeZhDlR4L0wnePcSpJtzAbDGMiG/2FS3DyrknJm0RrS3WCmn7xjSQQsilpR8ppVxl9Y+OC6YiH9Fh2g6nsWInEdTGYCHy8U/5ss+MMzfKxkJbBYDzyrJJVg/FVAKQcrWU1JqAy9mGvH5XLXdAMUeekZAVTitnNraFfL2f/Is7f5IrzCMhNmjugt3tk/L7NLMA43GZTVxvsCofCodyyqLMawcjToZYINNdN8sEv/oTnbhT1xyAOEBVhDeMuHNMfs3pN0CqILtDujUKUCiWYzqGm+oqpFL/0yap7fsta1O5tGXial3iDtfmWDF8vG99Du4UmUpxsJXIXeFXVIb8qBtjbQT4KqN3V869HsaF3flFIa1flqVI0iNDNUOUEYkiHehidEL9Od/Fy5yndTqHD/wbEmq9ELJPIYYJpUW5ydmGRfLDitMZLCOg7A6vyD2G0nONO6GxRKZ6iUN1BB7t8qdmO0tDUd+OKTFsy2A0TgmzjkUgNpR0pM3o=
   bucket: meshblu-connector
   local-dir: deploy
-  upload-dir: scripts/deployer
+  upload-dir: scripts
   region: us-west-2
   skip_cleanup: true
   on:
     tags: true
-    repo: octoblu/meshblu-connector-deployer

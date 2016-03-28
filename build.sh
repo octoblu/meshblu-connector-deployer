@@ -14,8 +14,8 @@ create_directories(){
 move_connector_to_deploy(){
   local connector_name="$1"
   local tag="$2"
-  rsync -av * "deploy/${connector_name}/latest" --exclude deploy --exclude .git
-  rsync -av * "deploy/${connector_name}/${tag}" --exclude deploy --exclude .git
+  rsync -avq * "deploy/${connector_name}/latest" --exclude deploy --exclude .git
+  rsync -avq * "deploy/${connector_name}/${tag}" --exclude deploy --exclude .git
 }
 
 main() {

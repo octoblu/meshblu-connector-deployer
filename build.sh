@@ -10,28 +10,32 @@ bundle_connector(){
   local connector_name="$1"
   local tag="$2"
   local filename="bundle.tar.gz"
-  pushd "deploy/${connector_name}/latest/raw/" > /dev/null
-    tar -zcf "../$filename" ./
+  pushd "deploy/raw" > /dev/null
+    tar -zcf "../${connector_name}/latest/$filename" ./
   popd  > /dev/null
   cp "deploy/${connector_name}/latest/$filename" "deploy/${connector_name}/${tag}"
 }
 
-clean(){
-  rm -rf ./deploy
+clean_start(){
+  rm -rf "./deploy"
+}
+
+clean_end(){
+  rm -rf "./deploy/raw"
 }
 
 create_directories(){
   local connector_name="$1"
   local tag="$2"
-  mkdir -p "deploy/${connector_name}/latest/raw"
-  mkdir -p "deploy/${connector_name}/${tag}/raw"
+  mkdir -p "deploy/raw"
+  mkdir -p "deploy/${connector_name}/latest"
+  mkdir -p "deploy/${connector_name}/${tag}"
 }
 
 move_connector_to_deploy(){
   local connector_name="$1"
   local tag="$2"
-  rsync -avq * "deploy/${connector_name}/latest/raw" --exclude deploy --exclude ".*" --exclude ".*/"
-  rsync -avq * "deploy/${connector_name}/${tag}/raw" --exclude deploy --exclude ".*" --exclude ".*/"
+  rsync -avq * "deploy/raw" --exclude deploy --exclude ".*" --exclude ".*/"
 }
 
 main() {
@@ -63,10 +67,11 @@ main() {
     exit 1
   fi
 
-  clean
+  clean_start
   create_directories "$connector_name" "$tag"
   move_connector_to_deploy "$connector_name" "$tag"
   bundle_connector "$connector_name" "$tag"
+  clean_end
   exit 0
 }
 

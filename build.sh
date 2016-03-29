@@ -36,7 +36,7 @@ create_directories(){
 move_connector_to_deploy(){
   local connector_name="$1"
   local tag="$2"
-  rsync -avq * "deploy/raw" --exclude deploy --exclude ".*" --exclude ".*/"
+  rsync -avq * "deploy/raw" --exclude deploy --exclude "./.*"
 }
 
 main() {

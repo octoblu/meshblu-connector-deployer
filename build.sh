@@ -46,6 +46,14 @@ create_directories(){
   mkdir -p "deploy/${connector_name}/${tag}"
 }
 
+download_connector_ignition(){
+  echo "### download ignition script"
+  local platform="$1"
+  local tools_uri="https://meshblu-connector.octoblu.com/tools"
+  curl -sL "$tools_uri/go-meshblu-connector-ignition/latest/meshblu-connector-ignition-$platform" -o start
+  chmod +x start
+}
+
 move_connector_to_deploy(){
   echo "### moving to deploy folder"
   local connector_name="$1"
@@ -53,14 +61,13 @@ move_connector_to_deploy(){
   rsync -avq * "deploy/raw" --exclude deploy --exclude "./.*"
 }
 
-verify_project(){
-  echo "### verifying project"
-  if [ ! -f "./start" ]; then
-    echo "Missing start script"
-    exit 1
-  fi
-  if [ ! -x "./start" ]; then
-    echo "Start script is not executable"
+verify_platform() {
+  local platform="$1"
+
+  local pattern='^(darwin-386|darwin-amd64|windows-386|windows-amd64|linux-386|linux-amd64)$'
+  if ! [[ "$platform" =~ $pattern ]]; then
+    echo "Invalid platform type, $platform"
+    echo "Must be one of ['darwin-386', 'darwin-amd64', 'windows-386', 'windows-amd64', 'linux-386', 'linux-amd64']"
     exit 1
   fi
 }
@@ -71,22 +78,20 @@ main() {
     exit 1
   fi
 
-  verify_project
-
   local connector_name="$1"
   local tag="$2"
   local platform="$3"
 
   if [ -z "$connector_name" ]; then
-    connector_name=$PACKAGER_CONNECTOR_NAME
+    connector_name="$PACKAGER_CONNECTOR_NAME"
   fi
 
   if [ -z "$tag" ]; then
-    tag=$PACKAGER_TAG
+    tag="$PACKAGER_TAG"
   fi
 
   if [ -z "$platform" ]; then
-    platform=$PACKAGER_PLATFORM
+    platform="$PACKAGER_PLATFORM"
   fi
 
   if [ -z "$connector_name" ]; then
@@ -107,9 +112,10 @@ main() {
     exit 1
   fi
 
-  platform=$(convert_travis_os_to_platform "$platform")
+  verify_platform "$platform"
 
   clean_start
+  download_connector_ignition "$platform"
   create_directories "$connector_name" "$tag"
   move_connector_to_deploy "$connector_name" "$tag"
   bundle_connector "$connector_name" "$tag" "$platform"

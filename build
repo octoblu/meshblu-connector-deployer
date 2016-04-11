@@ -1,21 +1,27 @@
 #!/bin/bash
 
 print_usage(){
-  echo "Usage: ./build.sh <connector-name> <tag> <platform>"
-  echo "or"
-  echo "Usage: env PACKAGER_CONNECTOR_NAME=<connector-name> PACKAGER_TAG=<tag> PACKAGER_PLATFORM=<platform> ./build.sh"
+  echo "Usage: env .. ./build"
+  echo "Enviroment:"
+  echo "   PACKAGER_CONNECTOR=<connector-name>"
+  echo "   PACKAGER_TAG=<tag>"
+  echo "   PACKAGER_OS=<os-name>"
+  echo "   PACKAGER_ARCH=<os-arch>"
+  echo "   PACKAGER_NODE_VERSION=<node-version>"
+  echo "./build.sh"
 }
 
 bundle_connector(){
   echo "### bundling connector..."
-  local connector_name="$1"
+  local connector="$1"
   local tag="$2"
   local platform="$3"
-  local filename="${platform}.bundle.tar.gz"
+  local node_version="$4"
+  local filename="${platform}-node-${node_version}.bundle.tar.gz"
   pushd "deploy/raw" > /dev/null
-    tar -zcf "../${connector_name}/latest/$filename" ./
+    tar -zcf "../${connector}/latest/$filename" ./
   popd  > /dev/null
-  cp "deploy/${connector_name}/latest/$filename" "deploy/${connector_name}/${tag}"
+  cp "deploy/${connector}/latest/$filename" "deploy/${connector}/${tag}"
 }
 
 clean_start(){
@@ -39,11 +45,11 @@ convert_travis_os_to_platform(){
 
 create_directories(){
   echo "### creating deploy directories"
-  local connector_name="$1"
+  local connector="$1"
   local tag="$2"
   mkdir -p "deploy/raw"
-  mkdir -p "deploy/${connector_name}/latest"
-  mkdir -p "deploy/${connector_name}/${tag}"
+  mkdir -p "deploy/${connector}/latest"
+  mkdir -p "deploy/${connector}/${tag}"
 }
 
 download_connector_ignition(){
@@ -56,7 +62,7 @@ download_connector_ignition(){
 
 move_connector_to_deploy(){
   echo "### moving to deploy folder"
-  local connector_name="$1"
+  local connector="$1"
   local tag="$2"
   rsync -avq * "deploy/raw" --exclude deploy --exclude "./.*"
 }
@@ -78,25 +84,15 @@ main() {
     exit 1
   fi
 
-  local connector_name="$1"
-  local tag="$2"
-  local platform="$3"
+  local connector="$PACKAGER_CONNECTOR"
+  local tag="$PACKAGER_TAG"
+  local os="$PACKAGER_OS"
+  local arch="$PACKAGER_ARCH"
+  local node_version="$PACKAGER_NODE_VERSION"
 
-  if [ -z "$connector_name" ]; then
-    connector_name="$PACKAGER_CONNECTOR_NAME"
-  fi
-
-  if [ -z "$tag" ]; then
-    tag="$PACKAGER_TAG"
-  fi
-
-  if [ -z "$platform" ]; then
-    platform="$PACKAGER_PLATFORM"
-  fi
-
-  if [ -z "$connector_name" ]; then
+  if [ -z "$connector" ]; then
     print_usage
-    echo "Missing connector name"
+    echo "Missing connector"
     exit 1
   fi
 
@@ -106,19 +102,33 @@ main() {
     exit 1
   fi
 
-  if [ -z "$platform" ]; then
+  if [ -z "$os" ]; then
     print_usage
-    echo "Missing platform"
+    echo "Missing operating system"
     exit 1
   fi
+
+  if [ -z "$arch" ]; then
+    print_usage
+    echo "Missing arch"
+    exit 1
+  fi
+
+  if [ -z "$node_version" ]; then
+    print_usage
+    echo "Missing node version"
+    exit 1
+  fi
+
+  local platform="${os}-${arch}"
 
   verify_platform "$platform"
 
   clean_start
   download_connector_ignition "$platform"
-  create_directories "$connector_name" "$tag"
-  move_connector_to_deploy "$connector_name" "$tag"
-  bundle_connector "$connector_name" "$tag" "$platform"
+  create_directories "$connector" "$tag"
+  move_connector_to_deploy "$connector" "$tag"
+  bundle_connector "$connector" "$tag" "$platform" "$node_version"
   clean_end
   exit 0
 }

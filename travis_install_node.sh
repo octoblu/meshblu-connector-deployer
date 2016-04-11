@@ -18,6 +18,11 @@ install_nvm(){
   curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh | bash
 }
 
+update_npm(){
+  echo "### Updating npm"
+  npm install --global npm
+}
+
 verify(){
   echo "### Verifying npm"
   npm --version
@@ -33,6 +38,7 @@ verify(){
 main(){
   install_nvm
   install_node
+  update_npm
   verify
   echo "### Done"
 }

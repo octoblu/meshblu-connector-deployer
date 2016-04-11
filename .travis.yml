@@ -3,8 +3,8 @@ script: echo "no test";
 before_deploy:
 - mkdir -p deploy/packager/latest
 - mkdir -p deploy/packager/${TRAVIS_TAG:-$TRAVIS_COMMIT}
-- cp build.sh deploy/packager/latest
-- cp build.sh deploy/packager/${TRAVIS_TAG:-$TRAVIS_COMMIT}
+- cp *.sh deploy/packager/latest
+- cp *.sh deploy/packager/${TRAVIS_TAG:-$TRAVIS_COMMIT}
 deploy:
 - provider: s3
   access_key_id: AKIAJH2D5IPIRHYJT5IA

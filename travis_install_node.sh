@@ -2,20 +2,23 @@
 
 install_node(){
   echo "### Installing node"
-  nvm install $PACKAGER_NODE_VERSION
+  nvm install --delete-prefix $PACKAGER_NODE_VERSION
   BASE_URL=$(node -p "v=parseInt(process.versions.node),(v>=1&&v<4?'https://iojs.org/dist/':'https://nodejs.org/dist/')+process.version")
   X86_FILE=$(node -p "v=parseInt(process.versions.node),(v>=1&&v<4?'iojs':'node')+'-'+process.version+'-'+process.platform+'-x86'")
   if [[ "$ARCH" == "386" ]]; then
-    echo "### Download node for x86"
-    wget $BASE_URL/$X86_FILE.tar.gz;
-    tar -xf $X86_FILE.tar.gz;
-    export PATH=$X86_FILE/bin:$PATH;
+    pushd "/tmp"
+      echo "### Download node for x86"
+      wget $BASE_URL/$X86_FILE.tar.gz;
+      tar -xf $X86_FILE.tar.gz;
+      export PATH=$X86_FILE/bin:$PATH;
+    popd
   fi
 }
 
 install_nvm(){
   echo "### Install nvm"
-  curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh | bash
+  git clone https://github.com/creationix/nvm.git ~/.nvm && cd ~/nvm && git checkout `git describe --abbrev=0 --tags`
+  source ~/nvm/nvm.sh
 }
 
 update_npm(){

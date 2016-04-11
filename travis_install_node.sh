@@ -41,7 +41,6 @@ verify(){
 main(){
   install_nvm
   install_node
-  update_npm
   verify
   echo "### Done"
 }

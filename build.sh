@@ -131,7 +131,6 @@ main() {
   bundle_connector "$connector" "$tag" "$platform" "$node_version"
   clean_end
   echo "### done"
-  exit 0
 }
 
 main $@

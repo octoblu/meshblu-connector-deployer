@@ -18,17 +18,12 @@ install_node(){
 
 install_nvm(){
   echo "### Install nvm"
-  rm -rf /tmp/.nvm
-  git clone https://github.com/creationix/nvm.git /tmp/.nvm
-  pushd /tmp/.nvm
+  rm -rf ~/.nvm
+  git clone https://github.com/creationix/nvm.git ~/.nvm
+  pushd ~/.nvm
     git checkout `git describe --abbrev=0 --tags`
   popd
-  source /tmp/.nvm/nvm.sh
-}
-
-update_npm(){
-  echo "### Updating npm"
-  npm install --global npm
+  source ~/.nvm/nvm.sh
 }
 
 setup(){

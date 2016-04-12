@@ -7,7 +7,6 @@ print_usage(){
   echo "   PACKAGER_TAG=<tag>"
   echo "   PACKAGER_OS=<os-name>"
   echo "   PACKAGER_ARCH=<os-arch>"
-  echo "   PACKAGER_NODE_VERSION=<node-version>"
   echo "./build.sh"
 }
 
@@ -17,7 +16,7 @@ bundle_connector(){
   local tag="$2"
   local platform="$3"
   local node_version="$4"
-  local filename="${platform}-node-${node_version}.bundle.tar.gz"
+  local filename="${platform}.bundle.tar.gz"
   pushd "deploy/raw" > /dev/null
     tar -zcf "../${connector}/latest/$filename" ./
   popd  > /dev/null
@@ -88,7 +87,6 @@ main() {
   local tag="$PACKAGER_TAG"
   local os="$PACKAGER_OS"
   local arch="$PACKAGER_ARCH"
-  local node_version="$PACKAGER_NODE_VERSION"
 
   if [ -z "$connector" ]; then
     print_usage
@@ -114,12 +112,6 @@ main() {
     exit 1
   fi
 
-  if [ -z "$node_version" ]; then
-    print_usage
-    echo "Missing node version"
-    exit 1
-  fi
-
   local platform="${os}-${arch}"
 
   verify_platform "$platform"
@@ -128,7 +120,7 @@ main() {
   download_connector_ignition "$platform"
   create_directories "$connector" "$tag"
   move_connector_to_deploy "$connector" "$tag"
-  bundle_connector "$connector" "$tag" "$platform" "$node_version"
+  bundle_connector "$connector" "$tag" "$platform"
   clean_end
   echo "### done"
 }

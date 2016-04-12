@@ -26,12 +26,12 @@ bundle_connector(){
 
 clean_start(){
   echo "### cleaning..."
-  rm -rf "./deploy"
+  rm -rf ./deploy
 }
 
 clean_end(){
   echo "### cleaning up"
-  rm -rf "./deploy/raw"
+  rm -rf ./deploy/raw
 }
 
 convert_travis_os_to_platform(){
@@ -130,6 +130,7 @@ main() {
   move_connector_to_deploy "$connector" "$tag"
   bundle_connector "$connector" "$tag" "$platform" "$node_version"
   clean_end
+  echo "### done"
   exit 0
 }
 

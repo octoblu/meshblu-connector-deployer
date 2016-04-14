@@ -3,7 +3,6 @@ path    = require 'path'
 temp    = require 'temp'
 request = require 'request'
 TarGz   = require 'tar.gz'
-Zip     = require 'zip'
 
 class CommandBuild
   parseOptions: =>

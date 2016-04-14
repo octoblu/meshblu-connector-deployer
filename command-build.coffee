@@ -2,7 +2,8 @@ fs      = require 'fs-extra'
 path    = require 'path'
 temp    = require 'temp'
 request = require 'request'
-targz   = require 'tar.gz'
+TarGz   = require 'tar.gz'
+Zip     = require 'zip'
 
 class CommandBuild
   parseOptions: =>
@@ -33,9 +34,7 @@ class CommandBuild
 
   getFileNameWithExt: =>
     {os} = @options
-    ext = "tar.gz"
-    ext = "zip" if os == "windows"
-    return "#{@getFileName()}.#{ext}"
+    return "#{@getFileName()}.tar.gz"
 
   getStartScript: (tmpDir, callback) =>
     console.log "getting start script"
@@ -48,10 +47,10 @@ class CommandBuild
       uri: "/go-meshblu-connector-ignition/latest/meshblu-connector-ignition-#{os}-#{arch}"
     })
     .on 'error', (error) =>
-      console.log 'start script error'
+      console.log '### start script error'
       callback error
     .on 'end', =>
-      console.log 'start script done'
+      console.log '### start script done'
       fs.chmodSync(destination, 0x0755)
       callback null
     .pipe(fs.createWriteStream(destination))
@@ -61,12 +60,12 @@ class CommandBuild
     {build_dir, connector} = @options
     destination = path.join(build_dir, "deploy/#{connector}/#{tag}", @getFileNameWithExt())
     bundle_dir = path.join tmpDir, @getFileName()
-    targz().compress bundle_dir, destination, (error) =>
+    new TarGz({}, {fromBase: true}).compress bundle_dir, destination, (error) =>
       return @panic error if error?
       console.log "bundled #{tag}"
 
   copyToTemp: (tmpDir) =>
-    console.log 'copying to temp'
+    console.log '### copying to temp'
     {build_dir} = @options
     filter = (filePath) =>
       relativePath = filePath.replace("#{build_dir}/", "")
@@ -80,7 +79,7 @@ class CommandBuild
     fs.copySync build_dir, toDir, {filter}
 
   setupDirectories: (callback) =>
-    console.log 'Setting up...'
+    console.log '### setting up...'
     {connector, os, arch, tag, build_dir} = @options
     fs.removeSync path.join(build_dir, "deploy")
     dirName = "#{connector}-#{tag}-#{os}-#{arch}"

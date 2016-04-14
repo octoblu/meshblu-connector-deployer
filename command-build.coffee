@@ -105,7 +105,7 @@ class CommandBuild
       @getStartScript tmpDir, (error) =>
         return @panic error if error?
         @copyToTemp tmpDir
-        {connector, tag} = @options
+        {connector, tag, build_dir} = @options
         fs.mkdirpSync path.join build_dir, "deploy/#{connector}/latest"
         fs.mkdirpSync path.join build_dir, "deploy/#{connector}/#{tag}"
         @bundle tmpDir, 'latest'

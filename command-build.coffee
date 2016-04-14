@@ -11,7 +11,7 @@ class CommandBuild
       tag: process.env.PACKAGER_TAG
       os: process.env.PACKAGER_OS
       arch: process.env.PACKAGER_ARCH
-      build_dir: __dirname
+      build_dir: process.cwd()
     }
 
     return @panic new Error('Missing PACKAGER_CONNECTOR') unless options.connector?

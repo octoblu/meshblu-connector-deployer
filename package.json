@@ -1,0 +1,38 @@
+{
+  "name": "meshblu-connector-packager",
+  "version": "8.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "meshblu-connector-packager": "./command-build.js"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/octoblu/meshblu-connector-packager.git"
+  },
+  "author": "Octoblu, Inc. <npm@octoblu.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/octoblu/meshblu-connector-packager/issues"
+  },
+  "homepage": "https://github.com/octoblu/meshblu-connector-packager#readme",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "coffee-coverage": "^1.0.1",
+    "mocha": "^2.4.5",
+    "mocha-istanbul": "^0.2.0",
+    "sinon": "^1.17.3",
+    "sinon-chai": "^2.8.0"
+  },
+  "dependencies": {
+    "coffee-script": "^1.10.0",
+    "fs-extra": "^0.26.7",
+    "lodash": "^4.11.1",
+    "request": "^2.71.0",
+    "tar.gz": "^1.0.3",
+    "temp": "^0.8.3"
+  }
+}

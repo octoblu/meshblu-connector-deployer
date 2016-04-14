@@ -95,8 +95,6 @@ class CommandBuild
     temp.mkdir dirName, (error, tmpDir) =>
       return callback error if error?
       fs.mkdirpSync path.join(tmpDir, @getFileName())
-      fs.mkdirpSync path.join build_dir, "deploy/#{connector}/latest"
-      fs.mkdirpSync path.join build_dir, "deploy/#{connector}/#{tag}"
       callback null, tmpDir
 
   run: =>
@@ -107,6 +105,9 @@ class CommandBuild
       @getStartScript tmpDir, (error) =>
         return @panic error if error?
         @copyToTemp tmpDir
+        {connector, tag} = @options
+        fs.mkdirpSync path.join build_dir, "deploy/#{connector}/latest"
+        fs.mkdirpSync path.join build_dir, "deploy/#{connector}/#{tag}"
         @bundle tmpDir, 'latest'
         @bundle tmpDir, @options.tag
 

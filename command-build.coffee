@@ -3,6 +3,7 @@ path    = require 'path'
 temp    = require 'temp'
 request = require 'request'
 TarGz   = require 'tar.gz'
+zipdir  = require 'zip-dir'
 
 class CommandBuild
   parseOptions: =>
@@ -33,10 +34,12 @@ class CommandBuild
 
   getFileNameWithExt: =>
     {os} = @options
-    return "#{@getFileName()}.tar.gz"
+    ext = "tar.gz"
+    ext = "zip" if os == "windows"
+    return "#{@getFileName()}.#{ext}"
 
   getStartScript: (tmpDir, callback) =>
-    console.log "getting start script"
+    console.log "### getting start script"
     {os, arch} = @options
     ext = ""
     ext = ".exe" if os == "windows"
@@ -55,13 +58,20 @@ class CommandBuild
     .pipe(fs.createWriteStream(destination))
 
   bundle: (tmpDir, tag) =>
-    console.log "bundling #{tag}"
-    {build_dir, connector} = @options
+    console.log "### bundling #{tag}"
+    {build_dir, connector, os} = @options
     destination = path.join(build_dir, "deploy/#{connector}/#{tag}", @getFileNameWithExt())
     bundle_dir = path.join tmpDir, @getFileName()
+    @tarGz bundle_dir, destination if os != "windows"
+    @zip bundle_dir, destination if os == "windows"
+
+  tarGz: (bundle_dir, destination) =>
     new TarGz({}, {fromBase: true}).compress bundle_dir, destination, (error) =>
       return @panic error if error?
-      console.log "bundled #{tag}"
+
+  zip: (bundle_dir, destination) =>
+    zipdir bundle_dir, {saveTo: destination}, (error) =>
+      return @panic error if error?
 
   copyToTemp: (tmpDir) =>
     console.log '### copying to temp'

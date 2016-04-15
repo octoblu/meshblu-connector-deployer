@@ -46,7 +46,7 @@ class CommandBuild
     destination = path.join(tmpDir, @getFileName(), "start#{ext}")
     request({
       baseUrl: "https://meshblu-connector.octoblu.com/tools"
-      uri: "/go-meshblu-connector-ignition/latest/meshblu-connector-ignition-#{os}-#{arch}"
+      uri: "/go-meshblu-connector-ignition/v1.0.1/meshblu-connector-ignition-#{os}-#{arch}"
     })
     .on 'error', (error) =>
       console.log '### start script error'

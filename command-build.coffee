@@ -1,3 +1,4 @@
+_       = require 'lodash'
 fs      = require 'fs-extra'
 path    = require 'path'
 temp    = require 'temp'
@@ -7,13 +8,25 @@ zipdir  = require 'zip-dir'
 
 class CommandBuild
   parseOptions: =>
-    options = {
+    build_dir = process.cwd()
+    args = {
       connector: process.env.PACKAGER_CONNECTOR
       tag: process.env.PACKAGER_TAG
       os: process.env.PACKAGER_OS
       arch: process.env.PACKAGER_ARCH
-      build_dir: process.cwd()
     }
+
+    pkg = @getPackageJSON(build_dir)
+
+    defaults = {
+      connector: @getConnectorName(pkg),
+      tag: @getVersion(pkg),
+      os: @getOS(),
+      arch: @getArch(),
+      build_dir: build_dir
+    }
+
+    options = _.defaults(defaults, args)
 
     return @panic new Error('Missing PACKAGER_CONNECTOR') unless options.connector?
     return @panic new Error('Missing PACKAGER_TAG') unless options.tag?
@@ -26,7 +39,33 @@ class CommandBuild
     unless options.arch in ['386', 'amd64']
       return @panic new Error('Invalid ARCH, must be one of ["386", "amd64"]')
 
+    console.log("### packaging #{options.connector} #{options.tag} for #{options.os}-#{options.arch}")
+
     @options = options
+
+  getPackageJSON: (build_dir) =>
+    return require(path.join(build_dir, 'package.json'))
+
+  getConnectorName: (pkg) =>
+    {name} = pkg
+    return name.replace('meshblu-connector-', '') if name.indexOf('meshblu-connector-') > -1
+    return name.replace('meshblu-', '') if name.indexOf('meshblu-') > -1
+    return name
+
+  getVersion: (pkg) =>
+    return "v#{pkg.version}"
+
+  getOS: =>
+    {platform} = process
+    return 'windows' if platform == 'win32'
+    return platform
+
+  getArch: =>
+    {arch} = process
+    return '386' if arch == 'ia32'
+    return '386' if arch == 'x86'
+    return '386' if arch == '386'
+    return 'amd64'
 
   getFileName: =>
     {os, arch} = @options

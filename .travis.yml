@@ -1,6 +1,9 @@
 language: node_js
 node_js:
 - '5'
+branches:
+  only:
+  - /^v[0-9]/
 before_deploy:
 - mkdir -p deploy/packager/latest
 - mkdir -p deploy/packager/${TRAVIS_TAG:-$TRAVIS_COMMIT}

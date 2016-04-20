@@ -53,7 +53,7 @@ class CommandBuild
       callback error
     .on 'end', =>
       console.log '### start script done'
-      fs.chmodSync(destination, 755)
+      fs.chmodSync(destination, '755')
       callback null
     .pipe(fs.createWriteStream(destination))
 
@@ -112,7 +112,7 @@ class CommandBuild
         @bundle tmpDir, @options.tag
 
   panic: (error) =>
-    console.error error if error?
+    console.error error.stack if error?
     process.exit 1
 
 new CommandBuild().run()

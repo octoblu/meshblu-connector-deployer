@@ -33,15 +33,6 @@ clean_end(){
   rm -rf ./deploy/raw
 }
 
-convert_travis_os_to_platform(){
-  local platform="$1"
-  if [ "$platform" == "osx" ]; then
-    echo "darwin"
-    exit 0
-  fi
-  echo "$platform"
-}
-
 create_directories(){
   echo "### creating deploy directories"
   local connector="$1"

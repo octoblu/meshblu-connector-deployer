@@ -53,7 +53,7 @@ class CommandBuild
       callback error
     .on 'end', =>
       console.log '### start script done'
-      fs.chmodSync(destination, 0x0755)
+      fs.chmodSync(destination, 755)
       callback null
     .pipe(fs.createWriteStream(destination))
 

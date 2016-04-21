@@ -54,6 +54,7 @@ class CommandBuild
 
   getArch: =>
     {arch} = process
+    arch = process.env.PACKAGER_ARCH || arch
     return '386' if arch == 'ia32'
     return '386' if arch == 'x86'
     return '386' if arch == '386'

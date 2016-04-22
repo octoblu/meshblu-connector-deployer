@@ -29,7 +29,7 @@ Add the following to your package.json
     "package": "meshblu-connector-packager"
   },
   "meshbluConnector": {
-    "connectorInstallerVersion": "latest",
+    "connectorAssemblerVersion": "latest",
     "dependencyManagerVersion": "latest",
     "ignitionVersion": "v1.0.6",
     "githubSlug": "octoblu/meshblu-connector-{connector-name}",

@@ -19,11 +19,13 @@ class Bundler
       return callback null, destination
 
   tarGz: ({bundleDir, destination}, callback) =>
-    return callback null if @os != "windows"
+    return callback null if @os == "windows"
+    console.log '### bundling tar.gz'
     new TarGz({}, {fromBase: true}).compress bundleDir, destination, callback
 
   zip: ({bundleDir, destination}, callback) =>
-    return callback null if @os == "windows"
+    return callback null unless @os == "windows"
+    console.log '### bundling zip'
     zipdir bundleDir, {saveTo: destination}, callback
 
 module.exports = Bundler

@@ -81,6 +81,7 @@ deploy:
 - provider: releases
   api_key:
     secure: "secure-api-key"
+  file_glob: true
   file:
   - "deploy/*"
   skip_cleanup: true
@@ -96,3 +97,48 @@ deploy:
 ```
 
 *Don't forget to encrypt and add your NPM Key and Github Oauth Token*
+
+
+### Example Appveyor Usage:
+
+```yml
+environment:
+  nodejs_version: 5.5.0
+platform:
+  - x64
+  - x86
+shallow_clone: true
+skip_non_tags: true
+install:
+  - ps: Install-Product node $env:nodejs_version $env:Platform
+  - node --version
+  - npm --version
+  - node -e "console.log(process.arch);"
+  - FOR /F "delims=" %%a IN ('node -e "console.log(require('./package.json').version)"') DO SET PACKAGE_VERSION=%%~a
+  - SET PATH=C:\Program Files (x86)\MSBuild\12.0\bin\;%PATH%
+  - SET GYP_MSVS_VERSION=2013
+  - if "%PLATFORM%" == "x64" set PATH=C:\Python27-x64;%PATH%
+  - if "%PLATFORM%" == "x86" SET PATH=C:\python27;%PATH%
+  - npm install
+  - ps: >-
+      if($env:platform -eq "x86") {
+        $env:PACKAGER_ARCH="386"
+      } else {
+        $env:PACKAGER_ARCH="amd64"
+      }
+  - npm run package
+  - ps: $root = Resolve-Path deploy; [IO.Directory]::GetFiles($root.Path, '*.*', 'AllDirectories') | % { Push-AppveyorArtifact $_ -FileName $_.Substring($root.Path.Length + 1) -DeploymentName Connector }
+build: off
+test: off
+deploy:
+- provider: GitHub
+  description: 'Meshblu Connector Bundles'
+  auth_token:
+    secure: "secure-api-key"
+  artifact: Connector
+  draft: false
+  prerelease: false
+  on:
+    branch: master
+    appveyor_repo_tag: true
+```

@@ -4,13 +4,13 @@ path   = require 'path'
 async  = require 'async'
 
 class Bundler
-  constructor: ({ @buildDir, @fileName, @fileNameWithExt }) ->
+  constructor: ({ @os, @buildDir, @fileName, @fileNameWithExt }) ->
 
   do: (tmpDir, callback) =>
     console.log "### bundling"
     destination = path.join @buildDir, "deploy", @fileNameWithExt
     bundleDir = path.join tmpDir, @fileName
-    async.parallel [
+    async.series [
       async.apply(@tarGz, {bundleDir, destination})
       async.apply(@zip, {bundleDir, destination})
     ], (error) =>
@@ -19,12 +19,12 @@ class Bundler
       return callback null, destination
 
   tarGz: ({bundleDir, destination}, callback) =>
-    return callback null if @os == "windows"
+    return callback() if @os == "windows"
     console.log '### bundling tar.gz'
     new TarGz({}, {fromBase: true}).compress bundleDir, destination, callback
 
   zip: ({bundleDir, destination}, callback) =>
-    return callback null unless @os == "windows"
+    return callback() if @os != "windows"
     console.log '### bundling zip'
     zipdir bundleDir, {saveTo: destination}, callback
 

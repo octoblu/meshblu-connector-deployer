@@ -64,8 +64,8 @@ class CommandBuild
     return 'amd64'
 
   getFileName: (options) =>
-    {os, arch} = options
-    return "#{os}-#{arch}"
+    { os, arch, connector } = options
+    return "#{connector}-#{os}-#{arch}"
 
   getFileNameWithExt: (options) =>
     {os, fileName} = options

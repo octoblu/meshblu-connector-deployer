@@ -15,6 +15,7 @@ class Bundler
       async.apply(@zip, {bundleDir, destination})
     ], (error) =>
       return callback error if error?
+      console.log '### bundled', destination.replace(@buildDir, ".")
       return callback null, destination
 
   tarGz: ({bundleDir, destination}, callback) =>

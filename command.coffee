@@ -11,13 +11,11 @@ class CommandBuild
       connector: @getConnectorName(pkg),
       tag: @getVersion(pkg),
       githubSlug: @getGithubSlug(pkg),
+      ignitionVersion: @getIgnitionVersion(pkg),
       os: @getOS(),
       arch: @getArch(),
-      buildDir: buildDir,
-      githubOauthToken: process.env.PACKAGER_GITHUB_OAUTH_TOKEN
+      buildDir: buildDir
     }
-
-    return @panic new Error('Missing PACKAGER_GITHUB_OAUTH_TOKEN') unless options.githubOauthToken?
 
     unless options.os in ['darwin', 'windows', 'linux']
       return @panic new Error('Invalid OS, must be one of ["darwin", "windows", "linux"]')
@@ -37,6 +35,11 @@ class CommandBuild
     { meshbluConnector } = pkg
     { githubSlug } = meshbluConnector
     return githubSlug
+
+  getIgnitionVersion: (pkg) =>
+    { meshbluConnector } = pkg
+    { ignitionVersion } = meshbluConnector
+    return ignitionVersion ? 'v1.0.6'
 
   getConnectorName: (pkg) =>
     { name } = pkg

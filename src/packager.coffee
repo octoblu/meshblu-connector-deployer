@@ -2,36 +2,19 @@ _             = require 'lodash'
 fs            = require 'fs-extra'
 path          = require 'path'
 temp          = require 'temp'
-request       = require 'request'
 async         = require 'async'
-GithubRelease = require './github-release'
 Bundler       = require './bundler'
+Downloader    = require './downloader'
 
 class Packager
   constructor: (@options) ->
-    @githubRelease = new GithubRelease @options
     @bundler = new Bundler @options
+    @downloader = new Downloader @options
 
-  downloadStartScript: (tmpDir, callback) =>
-    console.log "### getting start script"
-    { exeExt, fileName, os, arch } = @options
-    destination = path.join(tmpDir, fileName, "start#{exeExt}")
-    request({
-      baseUrl: "https://github.com/octoblu/go-meshblu-connector-ignition"
-      uri: "/releases/download/v1.0.6/meshblu-connector-ignition-#{os}-#{arch}"
-    })
-    .on 'error', (error) =>
-      console.log '### start script error'
-      callback error
-    .on 'end', =>
-      console.log '### start script done'
-      fs.chmodSync(destination, '755')
-      callback null
-    .pipe(fs.createWriteStream(destination))
-
-  copyToTemp: (tmpDir) =>
+  copyToTemp: (tmpDir, callback) =>
     console.log '### copying to temp'
     { buildDir, fileName } = @options
+
     filter = (filePath) =>
       relativePath = filePath.replace("#{buildDir}/", "")
       if relativePath.indexOf('.') == 0
@@ -41,7 +24,7 @@ class Packager
       return true
 
     toDir = path.join tmpDir, fileName
-    fs.copySync buildDir, toDir, { filter }
+    fs.copy buildDir, toDir, { filter }, callback
 
   setupDirectories: (callback) =>
     console.log '### setting up...'
@@ -58,11 +41,10 @@ class Packager
   run: (callback) =>
     @setupDirectories (error, tmpDir) =>
       return callback error if error?
-      @downloadStartScript tmpDir, (error) =>
-        return callback error if error?
-        @copyToTemp tmpDir
-        @bundler.do tmpDir, (error, bundle) =>
-          return callback error if error?
-          @githubRelease.upload bundle, callback
+      async.series [
+        async.apply(@downloader.downloadStartScript, tmpDir)
+        async.apply(@copyToTemp, tmpDir)
+        async.apply(@bundler.do, tmpDir)
+      ], callback
 
 module.exports = Packager

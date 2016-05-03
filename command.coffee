@@ -39,7 +39,7 @@ class CommandBuild
   getIgnitionVersion: (pkg) =>
     { meshbluConnector } = pkg
     { ignitionVersion } = meshbluConnector
-    return ignitionVersion ? 'v1.0.6'
+    return ignitionVersion ? 'v2.0.1'
 
   getConnectorName: (pkg) =>
     { name } = pkg

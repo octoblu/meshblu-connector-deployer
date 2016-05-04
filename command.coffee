@@ -11,7 +11,6 @@ class CommandBuild
       connector: @getConnectorName(pkg),
       tag: @getVersion(pkg),
       githubSlug: @getGithubSlug(pkg),
-      ignitionVersion: @getIgnitionVersion(pkg),
       os: @getOS(),
       arch: @getArch(),
       buildDir: buildDir
@@ -35,11 +34,6 @@ class CommandBuild
     { meshbluConnector } = pkg
     { githubSlug } = meshbluConnector
     return githubSlug
-
-  getIgnitionVersion: (pkg) =>
-    { meshbluConnector } = pkg
-    { ignitionVersion } = meshbluConnector
-    return ignitionVersion ? 'v2.0.1'
 
   getConnectorName: (pkg) =>
     { name } = pkg

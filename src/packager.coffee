@@ -42,7 +42,6 @@ class Packager
     @setupDirectories (error, tmpDir) =>
       return callback error if error?
       async.series [
-        async.apply(@downloader.downloadStartScript, tmpDir)
         async.apply(@copyToTemp, tmpDir)
         async.apply(@bundler.do, tmpDir)
       ], callback

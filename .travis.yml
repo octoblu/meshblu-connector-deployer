@@ -7,8 +7,8 @@ branches:
 before_deploy:
 - mkdir -p deploy/packager/latest
 - mkdir -p deploy/packager/${TRAVIS_TAG:-$TRAVIS_COMMIT}
-- cp *.sh deploy/packager/latest
-- cp *.sh deploy/packager/${TRAVIS_TAG:-$TRAVIS_COMMIT}
+- cp scripts/*.sh deploy/packager/latest
+- cp scripts/*.sh deploy/packager/${TRAVIS_TAG:-$TRAVIS_COMMIT}
 deploy:
 - provider: s3
   access_key_id: AKIAJH2D5IPIRHYJT5IA

@@ -1,5 +1,12 @@
 #!/bin/bash
 
+fatal(){
+  local message="$1"
+
+  echo "$message"
+  exit 1
+}
+
 install_node(){
   local node_version="$1"
   local os_arch="$2"
@@ -37,11 +44,11 @@ setup(){
 
 verify(){
   echo '* verifying npm'
-  npm --version
+  npm --version || return 1
   echo '* verifying node'
-  node --version
+  node --version || return 1
   echo '* verifying CXX'
-  $CXX --version
+  $CXX --version || return 1
 }
 
 main(){
@@ -62,15 +69,12 @@ main(){
     exit 1
   fi
 
-  setup "$os_name" && \
-    install_nvm && \
-    install_node "$node_version" "$os_arch" && \
-    verify && \
-    echo '* done' && \
-    exit 0
+  setup "$os_name"                        || fatal "Failed to setup"
+  install_nvm                             || fatal "Failed to install nvm"
+  install_node "$node_version" "$os_arch" || fatal "Failed to install node"
+  verify                                  || fatal "Failed to verify"
 
-  echo 'node install failed'
-  exit 1
+  echo '* done'
 }
 
 main

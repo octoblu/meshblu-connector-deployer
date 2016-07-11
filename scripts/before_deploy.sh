@@ -57,6 +57,5 @@ main(){
   else
     build || fatal "Failed to build"
   fi
-
 }
 main $@
